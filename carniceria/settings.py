@@ -1,13 +1,22 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'cambia-estooo'
+# ---------------------------
+# VARIABLES DE ENTORNO
+# ---------------------------
 
-DEBUG = True
+SECRET_KEY = os.environ.get("SECRET_KEY", "cambia-estooo")
 
-ALLOWED_HOSTS = ["*"]
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split()
+
+# ---------------------------
+# APLICACIONES
+# ---------------------------
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,8 +28,16 @@ INSTALLED_APPS = [
     'app',
 ]
 
+# ---------------------------
+# MIDDLEWARE
+# ---------------------------
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # Whitenoise para servir estáticos en producción
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -49,7 +66,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'carniceria.wsgi.application'
 
-# Base de datos local (SQLite)
+# ---------------------------
+# BASE DE DATOS
+# ---------------------------
+
+# Local (SQLite)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -57,20 +78,39 @@ DATABASES = {
     }
 }
 
-# Para Railway (si usas Postgres después)
-import dj_database_url
+# Producción (Render se adapta automáticamente)
 DATABASES["default"] = dj_database_url.config(
     default=f"sqlite:///{BASE_DIR/'db.sqlite3'}",
     conn_max_age=600,
 )
+
+# ---------------------------
+# AUTENTICACIÓN
+# ---------------------------
 
 AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = 'es-mx'
 TIME_ZONE = 'America/Mexico_City'
 
+# ---------------------------
+# ARCHIVOS ESTÁTICOS
+# ---------------------------
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-LOGIN_REDIRECT_URL = 'dashboard'  # nombre de la url de tu dashboard en urls.py
 
-AUTH_USER_MODEL = 'app.Usuario'  # 'app' es el nombre de tu aplicación
+# Habilitar compresión de Whitenoise
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# ---------------------------
+# REDIRECCIONES
+# ---------------------------
+
+LOGIN_REDIRECT_URL = 'dashboard'
+
+# ---------------------------
+# USUARIO CUSTOM
+# ---------------------------
+
+AUTH_USER_MODEL = 'app.Usuario'
