@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load utils %} {# para el filtro format_kilos_gramos #}
+
+{% block title %}Ticket de Compra{% endblock %}
+
+{% block content %}
+<h2>Ticket Compra #{{ compra.id }}</h2>
+<p><strong>Fecha:</strong> {{ compra.fecha|date:"Y-m-d H:i" }}</p>
+<p><strong>Proveedor:</strong> {{ compra.proveedor.nombre if compra.proveedor else "Sin proveedor" }}</p>
+
+<table class="table table-bordered mt-3">
+  <thead>
+    <tr>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Precio unit.</th>
+      <th>Subtotal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in detalles %}
+    <tr>
+      <td>{{ d.producto.nombre }}</td>
+      <td>{{ d.cantidad|floatformat:3|format_kilos_gramos }}</td>
+      <td>${{ d.precio_unitario|floatformat:2 }}</td>
+      <td>${{ d.subtotal|floatformat:2 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3 class="text-end">Total: ${{ compra.total|floatformat:2 }}</h3>
+<a href="{% url 'compras_historial' %}" class="btn btn-secondary">Volver</a>
+{% endblock %}

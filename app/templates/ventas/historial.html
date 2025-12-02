@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load utils %}
+{% block title %}Historial de Ventas — Carnicería{% endblock %}
+
+{% block content %}
+<h2>Historial de Ventas</h2>
+
+<div class="table-responsive mt-3">
+  <table class="table table-hover">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Detalles</th>
+        <th class="text-end">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for venta in ventas %}
+      <tr>
+        <td class="text-center">{{ venta.id }}</td>
+
+        <td>{{ venta.fecha|date:"Y-m-d H:i" }}</td>
+
+        <td><strong>${{ venta.total }}</strong></td>
+
+        <td>
+          <ul class="mb-0">
+            {% for detalle in venta.detalles.all %}
+            <li>
+              {{ detalle.producto.nombre }} — 
+              {{ detalle.cantidad|floatformat:3|format_kilos_gramos }} × ${{ detalle.precio }} =
+              <strong>${{ detalle.subtotal }}</strong>
+            </li>
+            {% endfor %}
+          </ul>
+        </td>
+
+        <td class="text-end">
+          <a href="{% url 'venta_ticket_pdf' venta.id %}" class="btn btn-sm btn-outline-primary">
+            Ticket PDF
+          </a>
+        </td>
+      </tr>
+
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center">No hay ventas registradas.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

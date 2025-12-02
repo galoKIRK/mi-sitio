@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Carnicería{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard General</h2>
+
+<div class="row g-3">
+
+  <!-- Total Ventas -->
+  <div class="col-md-3 col-sm-6">
+    <div class="card text-center p-3">
+      <div class="card-body">
+        <h5 class="text-info">Total Ventas</h5>
+        <p class="display-6 text-success">${{ total_ventas|floatformat:3 }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Compras -->
+  <div class="col-md-3 col-sm-6">
+    <div class="card text-center p-3">
+      <div class="card-body">
+        <h5 class="text-warning">Total Compras</h5>
+        <p class="display-6 text-danger">${{ total_compras }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance -->
+  <div class="col-md-3 col-sm-6">
+    <div class="card text-center p-3">
+      <div class="card-body">
+        <h5 class="text-primary">Balance Final</h5>
+        {% if balance_final >= 0 %}
+          <p class="display-6 text-primary">${{ balance_final|floatformat:3 }}</p>
+        {% else %}
+          <p class="display-6 text-danger">${{ balance_final }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Productos -->
+  <div class="col-md-3 col-sm-6">
+    <div class="card text-center p-3">
+      <div class="card-body">
+        <h5 class="text-info">Productos</h5>
+        <p class="display-6 text-light">{{ total_productos }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clientes -->
+  <div class="col-md-3 col-sm-6">
+    <div class="card text-center p-3">
+      <div class="card-body">
+        <h5 class="text-info">Clientes</h5>
+        <p class="display-6 text-light">{{ total_clientes }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proveedores -->
+  <div class="col-md-3 col-sm-6">
+    <div class="card text-center p-3">
+      <div class="card-body">
+        <h5 class="text-info">Proveedores</h5>
+        <p class="display-6 text-light">{{ total_proveedores }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="row mt-4 g-4">
+<!-- ======================= -->
+<!--   GRAFICA 6 MESES       -->
+<!-- ======================= -->
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="text-center text-warning">Ventas últimos 6 meses</h4>
+        <div style="height: 280px;">
+          <canvas id="ventasMeses"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- ======================= -->
+<!--   GRAFICA PRODUCTOS     -->
+<!-- ======================= -->
+
+ <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="text-center text-warning">Ventas por producto</h4>
+        <div style="height: 280px;">
+          <canvas id="ventasProductos"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================= -->
+<!--   CHART JS SCRIPTS      -->
+<!-- ======================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    /* === GRÁFICA 6 MESES === */
+    const ctxMeses = document.getElementById('ventasMeses');
+    new Chart(ctxMeses, {
+        type: 'line',
+        data: {
+            labels: {{ meses|safe }},
+            datasets: [{
+                label: 'Ventas ($)',
+                data: {{ totales|safe }},
+                borderWidth: 2,
+                borderColor: 'rgba(255,165,0,0.8)',
+                backgroundColor: 'rgba(255,165,0,0.3)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { labels: { color: 'white' } }
+            },
+            scales: {
+                x: { ticks: { color: 'white' } },
+                y: { ticks: { color: 'white' } }
+            }
+        }
+    });
+
+    /* === GRÁFICA VENTAS POR PRODUCTO === */
+    const ctxProd = document.getElementById('ventasProductos');
+    new Chart(ctxProd, {
+        type: 'bar',
+        data: {
+            labels: {{ productos_nombres|safe }},
+            datasets: [{
+                label: 'Total vendido ($)',
+                data: {{ productos_totales|safe }},
+                backgroundColor: 'rgba(198,40,40,0.5)',
+                borderColor: 'rgba(198,40,40,1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { labels: { color: 'white' } }
+            },
+            scales: {
+                x: { ticks: { color: 'white' } },
+                y: { ticks: { color: 'white' } }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

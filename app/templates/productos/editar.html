@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Editar producto — Carnicería{% endblock %}
+
+{% block content %}
+<h2>Editar producto</h2>
+
+<form method="post" class="mt-3">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <div class="row g-3">
+
+    <!-- Nombre -->
+    <div class="col-md-6">
+      <label class="form-label">Nombre</label>
+      {{ form.nombre }}
+    </div>
+
+    <!-- Precio -->
+    <div class="col-md-6">
+      <label class="form-label">Precio por kg</label>
+      {{ form.precio }}
+    </div>
+
+    <!-- Stock -->
+    <div class="col-md-6">
+      <label class="form-label">Stock (kg + gramos)</label>
+      <input type="number"
+             name="stock"
+             class="form-control"
+             step="0.001"
+             min="0"
+             value="{{ form.stock.value|floatformat:3 }}">
+      <small class="text-muted">Ejemplo: 2.750 = 2 kg 750 g</small>
+    </div>
+
+  </div>
+
+  <div class="mt-4">
+    <button class="btn btn-primary">Guardar cambios</button>
+    <a href="{% url 'productos' %}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load utils %} {# para el filtro format_kilos_gramos #}
+
+{% block title %}Historial de Compras — Carnicería{% endblock %}
+
+{% block content %}
+<h2>Historial de Compras</h2>
+
+<div class="table-responsive mt-3">
+  <table class="table table-hover">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Proveedor</th>
+        <th>Total</th>
+        <th>Detalles</th>
+        <th class="text-end">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for compra in compras %}
+      <tr>
+        <td class="text-center">{{ compra.id }}</td>
+        <td>{{ compra.fecha|date:"Y-m-d H:i" }}</td>
+
+        <td>
+          {% if compra.proveedor %}
+            {{ compra.proveedor.nombre }}
+          {% else %}
+            Sin proveedor
+          {% endif %}
+        </td>
+
+        <td><strong>${{ compra.total|floatformat:2 }}</strong></td>
+
+        <td>
+          {% if compra.detalles.exists %}
+          <ul class="mb-0">
+            {% for detalle in compra.detalles.all %}
+            <li>
+              {{ detalle.producto.nombre }} — 
+              {{ detalle.cantidad|floatformat:3|format_kilos_gramos }} × ${{ detalle.precio_unitario|floatformat:2 }} =
+              <strong>${{ detalle.subtotal|floatformat:2 }}</strong>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+            Sin productos
+          {% endif %}
+        </td>
+
+        <td class="text-end">
+          <a href="{% url 'compra_ticket' compra.id %}" class="btn btn-sm btn-outline-primary">
+            Ver Ticket
+          </a>
+        </td>
+      </tr>
+
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center">No hay compras registradas.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

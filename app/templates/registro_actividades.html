@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Registro de Actividades{% endblock %}
+
+{% block content %}
+
+<h2>Registro de Actividades</h2>
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for act in actividades %}
+        <tr>
+            <td>{{ act.fecha|date:"Y-m-d H:i:s" }}</td>
+            <td>
+                {% if act.usuario %}
+                    {{ act.usuario.username }}
+                {% else %}
+                    Desconocido
+                {% endif %}
+            </td>
+            <td>{{ act.accion }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No hay registros disponibles.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
